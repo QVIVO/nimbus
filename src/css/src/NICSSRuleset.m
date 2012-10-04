@@ -38,6 +38,7 @@ static NSString* const kAdjustsFontSizeKey = @"-ios-adjusts-font-size";
 static NSString* const kBaselineAdjustmentKey = @"-ios-baseline-adjustment";
 static NSString* const kOpacityKey = @"opacity";
 static NSString* const kBackgroundColorKey = @"background-color";
+static NSString* const kBackgroundImageKey = @"background-image";
 static NSString* const kBorderRadiusKey = @"border-radius";
 static NSString* const kBorderKey = @"border";
 static NSString* const kBorderColorKey = @"border-color";
@@ -47,6 +48,8 @@ static NSString* const kActivityIndicatorStyleKey = @"-ios-activity-indicator-st
 static NSString* const kAutoresizingKey = @"-ios-autoresizing";
 static NSString* const kTableViewCellSeparatorStyleKey = @"-ios-table-view-cell-separator-style";
 static NSString* const kScrollViewIndicatorStyleKey = @"-ios-scroll-view-indicator-style";
+static NSString* const kWidthStyleKey = @"width";
+static NSString* const kHeightStyleKey = @"height";
 
 // This color table is generated on-demand and is released when a memory warning is encountered.
 static NSDictionary* sColorTable = nil;
@@ -54,6 +57,7 @@ static NSDictionary* sColorTable = nil;
 @interface NICSSRuleset()
 // Instantiates the color table if it does not already exist.
 + (NSDictionary *)colorTable;
++ (NSString *)urlFromCssValues:(NSArray *)cssValues numberOfConsumedTokens:(NSInteger *)pNumberOfConsumedTokens;
 + (UIColor *)colorFromCssValues:(NSArray *)cssValues numberOfConsumedTokens:(NSInteger *)pNumberOfConsumedTokens;
 + (UITextAlignment)textAlignmentFromCssValues:(NSArray *)cssValues;
 @end
@@ -451,6 +455,24 @@ static NSDictionary* sColorTable = nil;
   return _backgroundColor;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (BOOL)hasBackgroundImage {
+    return nil != [_ruleset objectForKey:kBackgroundImageKey];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (UIImage *)backgroundImage {
+    NIDASSERT([self hasBackgroundImage]);
+    if (!_is.cached.BackgroundImage) {
+        NSString *imgUrl = [[self class] urlFromCssValues:[_ruleset objectForKey:kBackgroundImageKey] numberOfConsumedTokens:nil];
+        if (imgUrl) {
+            _backgroundImage = [UIImage imageNamed:imgUrl];
+            _is.cached.BackgroundImage = YES;
+        }
+    }
+    return _backgroundImage;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (BOOL)hasBorderRadius {
@@ -694,6 +716,47 @@ static NSDictionary* sColorTable = nil;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+- (BOOL)hasWidth
+{
+    return nil != [_ruleset objectForKey:kWidthStyleKey];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (CGFloat)width
+{
+    NIDASSERT([self hasWidth]);
+    if (!_is.cached.Width) {
+        NSArray* values = [_ruleset objectForKey:kWidthStyleKey];
+        NIDASSERT([values count] == 1);
+        NIDPRINT(@"%@", values);
+        _width = [[values objectAtIndex:0] floatValue];
+        _is.cached.Width = YES;
+    }
+    return _width;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (BOOL)hasHeight
+{
+    return nil != [_ruleset objectForKey:kHeightStyleKey];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (CGFloat)height
+{
+    NIDASSERT([self hasHeight]);
+    if (!_is.cached.Height) {
+        NSArray* values = [_ruleset objectForKey:kHeightStyleKey];
+        NIDASSERT([values count] == 1);
+        NIDPRINT(@"%@", values);
+        _height = [[values objectAtIndex:0] floatValue];
+        _is.cached.Height = YES;
+    }
+    return _height;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - NSNotifications
 
@@ -933,6 +996,24 @@ static NSDictionary* sColorTable = nil;
     sColorTable = [colorTable copy];
   }
   return sColorTable;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
++ (NSString *)urlFromCssValues:(NSArray *)cssValues numberOfConsumedTokens:(NSInteger *)pNumberOfConsumedTokens {
+    NSInteger bogus = 0;
+    if (nil == pNumberOfConsumedTokens) {
+        pNumberOfConsumedTokens = &bogus;
+    }
+    NSString *urlString = nil;
+    NIDPRINT(@"%@", cssValues);
+    if ([cssValues count] >= 3 && [[cssValues objectAtIndex:0] isEqualToString:@"url("]) {
+        // url( path )
+        urlString = [cssValues objectAtIndex:1];
+        *pNumberOfConsumedTokens = 3;
+    } else if ([cssValues count] >= 1) {
+        return [cssValues objectAtIndex:0];
+    }
+    return urlString;
 }
 
 

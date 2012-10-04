@@ -84,6 +84,7 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
+typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -392,7 +393,7 @@ static void yy_fatal_error (yyconst char msg[]  );
  */
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
-	cssleng = (size_t) (yy_cp - yy_bp); \
+	cssleng = (yy_size_t) (yy_cp - yy_bp); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
@@ -2097,7 +2098,7 @@ int css_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *csstext;
 #line 1 "css.grammar"
-#line 2082 "lex.css.c"
+#line 2083 "lex.css.c"
 
 #define INITIAL 0
 
@@ -2280,7 +2281,7 @@ YY_DECL
 #line 21 "css.grammar"
 
 
-#line 2265 "lex.css.c"
+#line 2266 "lex.css.c"
 
 	if ( !(yy_init) )
 		{
@@ -2577,7 +2578,7 @@ YY_RULE_SETUP
 #line 75 "css.grammar"
 ECHO;
 	YY_BREAK
-#line 2562 "lex.css.c"
+#line 2563 "lex.css.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -3021,9 +3022,8 @@ static int yy_get_next_buffer (void)
 		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
-  if (yy_buffer_stack) {
-    YY_CURRENT_BUFFER_LVALUE = new_buffer;
-  }
+
+	YY_CURRENT_BUFFER_LVALUE = new_buffer;
 	css_load_buffer_state( );
 
 	/* We don't actually know whether we did this switch during
@@ -3175,9 +3175,7 @@ void csspush_buffer_state (YY_BUFFER_STATE new_buffer )
 	/* Only push if top exists. Otherwise, replace top. */
 	if (YY_CURRENT_BUFFER)
 		(yy_buffer_stack_top)++;
-  if (yy_buffer_stack) {
-    YY_CURRENT_BUFFER_LVALUE = new_buffer;
-  }
+	YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
 	/* copied from css_switch_to_buffer. */
 	css_load_buffer_state( );
@@ -3218,10 +3216,9 @@ static void cssensure_buffer_stack (void)
 		 * immediate realloc on the next call.
          */
 		num_to_alloc = 1;
-    const yy_size_t ptr_size = sizeof(struct yy_buffer_state*);
-    const yy_size_t size_to_alloc = ptr_size /* * num_to_alloc */;
-		(yy_buffer_stack) = (struct yy_buffer_state**)cssalloc(size_to_alloc);
-
+		(yy_buffer_stack) = (struct yy_buffer_state**)cssalloc
+								(num_to_alloc * sizeof(struct yy_buffer_state*)
+								);
 		if ( ! (yy_buffer_stack) )
 			YY_FATAL_ERROR( "out of dynamic memory in cssensure_buffer_stack()" );
 								  

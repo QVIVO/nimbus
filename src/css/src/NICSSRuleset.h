@@ -42,6 +42,7 @@
   UIBaselineAdjustment _baselineAdjustment;
   CGFloat _opacity;
   UIColor* _backgroundColor;
+  UIImage* _backgroundImage;
   CGFloat _borderRadius;
   UIColor *_borderColor;
   CGFloat _borderWidth;
@@ -50,7 +51,8 @@
   UIViewAutoresizing _autoresizing;
   UITableViewCellSeparatorStyle _tableViewCellSeparatorStyle;
   UIScrollViewIndicatorStyle _scrollViewIndicatorStyle;
-
+    CGFloat _width;
+    CGFloat _height;
   union {
     struct {
       int TextColor : 1;
@@ -65,6 +67,7 @@
       int BaselineAdjustment : 1;
       int Opacity : 1;
       int BackgroundColor : 1;
+      int BackgroundImage : 1;
       int BorderRadius : 1;
       int BorderColor : 1;
       int BorderWidth : 1;
@@ -73,6 +76,8 @@
       int Autoresizing : 1;
       int TableViewCellSeparatorStyle : 1;
       int ScrollViewIndicatorStyle : 1;
+      int Width : 1;
+      int Height : 1;
     } cached;
     int _data;
   } _is;
@@ -116,6 +121,9 @@
 - (BOOL)hasBackgroundColor;
 - (UIColor *)backgroundColor; // background-color
 
+- (BOOL)hasBackgroundImage;
+- (UIImage *)backgroundImage; // background-image
+
 - (BOOL)hasBorderRadius;
 - (CGFloat)borderRadius; // border-radius
 
@@ -139,6 +147,12 @@
 
 - (BOOL)hasScrollViewIndicatorStyle;
 - (UIScrollViewIndicatorStyle)scrollViewIndicatorStyle; // -ios-scroll-view-indicator-style
+
+- (BOOL)hasWidth;
+- (CGFloat)width;
+
+- (BOOL)hasHeight;
+- (CGFloat)height;
 
 @end
 

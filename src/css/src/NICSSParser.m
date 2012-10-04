@@ -170,6 +170,24 @@ int cssConsume(char* text, int token) {
                                                                           - prefixLength - 2)];
         [_importedFilenames addObject:filename];
 
+      } else if (token == CSSURI) {
+          NSInteger prefixLength = @"url(".length;
+          NSString* urlText = [textAsString substringWithRange:NSMakeRange(prefixLength,
+                                                                       textAsString.length
+                                                                       - prefixLength - 2)];
+          // trim leading and trailing spaces
+          NSRange leadRange = [urlText rangeOfString:@"^\\s*" options:NSRegularExpressionSearch];
+          urlText = [urlText stringByReplacingCharactersInRange:leadRange withString:@""];
+          NSRange trailRange = [urlText rangeOfString:@"\\s*$" options:NSRegularExpressionSearch];
+          urlText = [urlText stringByReplacingCharactersInRange:trailRange withString:@""];
+          
+          NIDASSERT(nil != _currentPropertyName);
+          if (nil != _currentPropertyName) {
+              NSMutableArray* values = [_mutatingRuleset objectForKey:_currentPropertyName];
+              [values addObject:urlText];
+          } else {
+              [self setFailFlag];
+          }
       } else {
         NIDASSERT(nil != _currentPropertyName);
 
